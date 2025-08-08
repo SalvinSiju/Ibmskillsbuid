@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Water Quality Monitoring</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f9ff;
+      color: #333;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #005792;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #005792;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #003f6d;
+    }
+
+    #result {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #008000;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Smart Water Quality Monitoring</h1>
+    <form id="waterForm">
+      <label>pH: <input type="number" step="0.01" name="ph" required></label>
+      <label>Hardness: <input type="number" name="Hardness" required></label>
+      <label>Solids: <input type="number" name="Solids" required></label>
+      <label>Chloramines: <input type="number" step="0.01" name="Chloramines" required></label>
+      <label>Sulfate: <input type="number" step="0.01" name="Sulfate" required></label>
+      <label>Conductivity: <input type="number" step="0.01" name="Conductivity" required></label>
+      <label>Organic Carbon: <input type="number" step="0.01" name="Organic_carbon" required></label>
+      <label>Trihalomethanes: <input type="number" step="0.01" name="Trihalomethanes" required></label>
+      <label>Turbidity: <input type="number" step="0.01" name="Turbidity" required></label>
+      <button type="submit">Predict Water Quality</button>
+    </form>
+
+    <h3 id="result"></h3>
+  </div>
+
+  <script>
+    document.getElementById("waterForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const data = {};
+
+      for (let [key, value] of formData.entries()) {
+        data[key] = parseFloat(value);
+      }
+
+      fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(json => {
+        document.getElementById("result").innerText = "Prediction: " + json.prediction;
+      })
+      .catch(err => {
+        document.getElementById("result").innerText = "Error: Could not connect to server.";
+        console.error(err);
+      });
+    });
+  </script>
+</body>
+</html>
